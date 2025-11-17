@@ -1,2 +1,2 @@
 # SAP_BTP
-SAP BTP Project using MM, FI Module
+## Developing SAP Fiori Apps for MM & FI on the BTP Trial Environment
