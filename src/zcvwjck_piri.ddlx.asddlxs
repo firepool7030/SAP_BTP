@@ -1,0 +1,27 @@
+@Metadata.layer: #CORE
+annotate view ZCVWJCK_PIRI with
+{
+  /* 아이템 번호 */
+  @UI.lineItem: [{ position: 10 }]
+  iteno;
+
+  /* 자재 번호 */
+  @UI.lineItem: [{ position: 20 }]
+  matnr;
+
+  /* 계획 수량 */
+  @UI.lineItem: [{ position: 30 }]
+  plqty;
+
+  /* AI 예측 수량 */
+  @UI.lineItem: [{ position: 40 }]
+  aiqty;
+  
+  /* 단위 (수량 뒤에 붙어 나오므로 별도 컬럼으로 안 보여줌) */
+  @UI.hidden: true
+  meins;
+  
+  /* 신뢰도 (별점이나 색상으로 표현 가능하지만 일단 텍스트로) */
+  @UI.lineItem: [{ position: 60, criticality: 'Cnflv' }] // (심화: 색상 입히기 가능)
+  cnflv;
+}

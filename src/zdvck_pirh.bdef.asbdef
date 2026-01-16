@@ -1,0 +1,56 @@
+managed implementation in class zbp_dvck_pirh unique;
+strict ( 2 );    // 최신 문법을 따르겠다는 선언
+
+/* PIR Header 정의 */
+define behavior for ZDVCK_PIRH alias PIR_Header
+persistent table ztckpirh       // 실제 데이터가 저장될 DB 테이블
+lock master                     // 잠금 주체
+authorization master ( instance )
+//etag master <field_name>      // 데이터가 화면에 보일 때와 저장될 때 사이의 버전 차이를 체크
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) pirnr;
+  association _Items { create; }
+
+  mapping for ztckpirh
+    {
+      pirnr   = pirnr;
+      werks   = werks;
+      pirdt   = pirdt;
+      pirvr   = pirvr;
+      aimod   = aimod;
+      aidat   = aidat;
+      erdat   = erdat;
+      ernam   = ernam;
+      pirart  = pirart;
+      pirdel  = pirdel;
+    }
+}
+
+/* PIR Item 정의 */
+define behavior for ZDVCK_PIRI alias PIR_Item
+persistent table ztckpiri
+lock dependent by _Header
+authorization dependent by _Header
+//etag master <field_name>
+{
+  update;
+  delete;
+  field ( readonly ) pirnr, iteno;
+  association _Header;
+
+  mapping for ztckpiri
+    {
+      pirnr   = pirnr;
+      iteno   = iteno;
+      matnr   = matnr;
+      plqty   = plqty;
+      aiqty   = aiqty;
+      urqty   = urqty;
+      plnmg   = plnmg;
+      meins   = meins;
+      cnflv   = cnflv;
+    }
+}

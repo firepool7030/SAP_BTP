@@ -1,0 +1,5 @@
+@EndUserText.label: 'PIR 헤더 Service Definitions'
+define service ZCK_PIRH_SD {
+  expose ZDVCK_PIRH as PIR_Header;
+  expose ZDVCK_PIRI as PIR_Item;
+}

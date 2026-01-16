@@ -1,0 +1,5 @@
+@EndUserText.label: '[WJ] PIR 서비스 정의'
+define service ZUI_PIR_SD {
+  expose ZCVWJCK_PIRH as PirHeader;
+  expose ZCVWJCK_PIRI as PirItem;
+}

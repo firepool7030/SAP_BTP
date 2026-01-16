@@ -1,0 +1,49 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZDVCK_PIRI with
+{
+    
+  /* 상세 페이지 구조 정의 */
+  @UI.facet: [
+    { id: 'ItemDetail', purpose: #STANDARD, type: #IDENTIFICATION_REFERENCE, label: '아이템 상세 정보', position: 10 }
+  ]
+
+  /* 1. 기본 식별 정보 */
+  @UI: { lineItem:       [{ position: 10, label: '아이템 번호' }],
+         identification: [{ position: 10, label: '아이템 번호' }] }
+  iteno;
+
+  @UI: { lineItem:       [{ position: 20, label: '자재번호' }],
+         identification: [{ position: 20, label: '자재번호' }] }
+  matnr;
+
+  /* 2. AI 분석 및 수량 계획 */
+  @UI: { lineItem:       [{ position: 30, label: 'AI 예측수량' }],
+         identification: [{ position: 30, label: 'AI 예측수량' }] }
+  aiqty;
+
+  @UI: { lineItem:       [{ position: 35, label: 'AI 예측 신뢰도', criticality: 'cnflv' }],
+         identification: [{ position: 35, label: 'AI 예측 신뢰도' }] }
+  cnflv;
+
+  @UI: { lineItem:       [{ position: 40, label: '담당자 수정수량' }],
+         identification: [{ position: 40, label: '담당자 수정수량' }] }
+  urqty;
+
+  /* 3. 최종 확정 및 실적 */
+  @UI: { lineItem:       [{ position: 50, label: '최종 계획수량', importance: #HIGH }],
+         identification: [{ position: 50, label: '최종 계획수량' }] }
+  plqty;
+
+  @UI: { lineItem:       [{ position: 60, label: '소모수량' }],
+         identification: [{ position: 60, label: '소모수량(SO)' }] }
+  plnmg;
+
+  /* 단위 필드는 수량 옆에 자동으로 붙으므로 숨김 처리하거나 뒤에 배치 */
+  /* @UI.identification: [{ position: 70, label: '단위' }] */
+  @UI.hidden: true
+  meins;
+
+  /* 부모 키인 pirnr은 라인아이템 리스트에서는 굳이 보여줄 필요가 없으므로 숨김처리 */
+  @UI.hidden: true
+  pirnr;
+}
