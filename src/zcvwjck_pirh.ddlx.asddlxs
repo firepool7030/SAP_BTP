@@ -1,10 +1,11 @@
 @Metadata.layer: #CORE
 @UI: {
-  headerInfo: { 
-    typeName: 'PIR 문서', 
-    typeNamePlural: 'PIR 목록', 
-    title: { value: 'Pirnr' }, // 상세 페이지 제목으로 쓸 필드
-    description: { value: 'Werks' } // 제목 밑에 작게 나올 설명
+  // 화면의 간판 (타이틀)
+  headerInfo: {
+    typeName: 'PIR 문서',             // 단수형 이름
+    typeNamePlural: 'PIR 목록',       // 복수형 이름
+    title: { value: 'Pirnr' },      //  
+    description: { value: 'Werks' } //
   }
 }
 annotate view ZCVWJCK_PIRH with

@@ -8,10 +8,10 @@ lock master                     // 잠금 주체
 authorization master ( instance )
 //etag master <field_name>      // 데이터가 화면에 보일 때와 저장될 때 사이의 버전 차이를 체크
 {
-  create ( authorization : global );
+  create;// ( authorization : global );
   update;
   delete;
-  field ( readonly ) pirnr;
+  field ( readonly : update ) pirnr;
   association _Items { create; }
 
   mapping for ztckpirh

@@ -1,0 +1,32 @@
+managed implementation in class zbp_ivwjck_pirh unique;
+strict ( 2 ); // 최신 문법 검사 모드
+
+// <PIR 헤더 행동 정의>--------------------------------------------------
+define behavior for ZIVWJCK_PIRH alias PIRHeader
+persistent table ztckpirh
+lock master
+authorization master ( instance )
+early numbering                     // 자동채번 활성화
+//etag master <field_name>
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) pirnr;         // 넘버레인지 생성
+  association _PIRI { create; }     // 자식 생성 연결
+
+}
+
+// <PIR 아이템 행동 정의>-------------------------------------------------
+define behavior for ZIVWJCK_PIRI alias PI
+persistent table ztckpiri
+lock dependent by _PIRH
+authorization dependent by _PIRH
+early numbering
+//etag master <field_name>
+{
+  update;
+  delete;
+  field ( readonly ) pirnr, iteno;
+  association _PIRH;
+}

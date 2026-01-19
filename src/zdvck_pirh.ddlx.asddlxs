@@ -1,4 +1,8 @@
 @Metadata.layer: #CUSTOMER
+@UI.headerInfo: { typeName: 'PIR 계획', typeNamePlural: 'PIR 계획 목록',
+         title: { type: #STANDARD, value: 'pirnr' },
+   description: { type: #STANDARD, value: 'werks' }
+}
 annotate entity ZDVCK_PIRH with
 {
   /* 상세 페이지의 구성을 결정하는 부분(Facets) */
@@ -30,11 +34,11 @@ annotate entity ZDVCK_PIRH with
   @UI: { lineItem:       [{ position: 50, label: 'AI 모델' }],
          identification: [{ position: 50, label: 'AI 모델' }] }
   aimod;
-  
+
   @UI: { lineItem:       [{ position: 60, label: 'AI 예측일자' }],
          identification: [{ position: 60, label: 'AI 예측일자' }] }
   aidat;
-  
+
   @UI: { lineItem:       [{ position: 70, label: '문서 생성일' }],
          identification: [{ position: 70, label: '문서 생성일' }] }
   erdat;
@@ -42,11 +46,11 @@ annotate entity ZDVCK_PIRH with
   @UI: { lineItem:       [{ position: 80, label: '문서 생성자' }],
          identification: [{ position: 80, label: '문서 생성자' }] }
   ernam;
-  
+
   @UI: { lineItem:       [{ position: 90, label: 'PIR 문서상태' }],
          identification: [{ position: 90, label: 'PIR 문서상태' }] }
   pirart;
-  
+
   @UI: { lineItem:       [{ position: 100, label: '삭제플래그' }],
          identification: [{ position: 100, label: '삭제플래그' }] }
   pirdel;
