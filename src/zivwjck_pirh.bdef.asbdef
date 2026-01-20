@@ -9,16 +9,30 @@ authorization master ( instance )
 early numbering                     // 자동채번 활성화
 //etag master <field_name>
 {
-  create ( authorization : global );
+  create;// ( authorization : global );
   update;
   delete;
   field ( readonly ) pirnr;         // 넘버레인지 생성
   association _PIRI { create; }     // 자식 생성 연결
 
+  mapping for ztckpirh
+    {
+      pirnr   = pirnr;
+      werks   = werks;
+      pirdt   = pirdt;
+      pirvr   = pirvr;
+      aimod   = aimod;
+      aidat   = aidat;
+      erdat   = erdat;
+      ernam   = ernam;
+      pirart  = pirart;
+      pirdel  = pirdel;
+    }
+
 }
 
 // <PIR 아이템 행동 정의>-------------------------------------------------
-define behavior for ZIVWJCK_PIRI alias PI
+define behavior for ZIVWJCK_PIRI alias PIRItem
 persistent table ztckpiri
 lock dependent by _PIRH
 authorization dependent by _PIRH
@@ -29,4 +43,18 @@ early numbering
   delete;
   field ( readonly ) pirnr, iteno;
   association _PIRH;
+
+    mapping for ztckpiri
+    {
+      pirnr   = pirnr;
+      iteno   = iteno;
+      matnr   = matnr;
+      plqty   = plqty;
+      aiqty   = aiqty;
+      urqty   = urqty;
+      plnmg   = plnmg;
+      meins   = meins;
+      cnflv   = cnflv;
+    }
+
 }

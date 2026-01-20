@@ -1,4 +1,9 @@
-CLASS zbp_ivwjck_pirh DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zivwjck_pirh.
+CLASS zbp_ivwjck_pirh DEFINITION
+    PUBLIC
+    ABSTRACT
+    FINAL
+    FOR BEHAVIOR OF zivwjck_pirh.
+
 ENDCLASS.
 
 CLASS zbp_ivwjck_pirh IMPLEMENTATION.

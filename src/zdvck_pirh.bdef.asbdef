@@ -11,7 +11,7 @@ authorization master ( instance )
   create;// ( authorization : global );
   update;
   delete;
-  field ( readonly : update ) pirnr;
+  field ( readonly ) pirnr;
   association _Items { create; }
 
   mapping for ztckpirh
