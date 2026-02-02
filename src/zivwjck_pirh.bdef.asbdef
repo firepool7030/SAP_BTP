@@ -13,21 +13,12 @@ early numbering                     // 자동채번 활성화
   update;
   delete;
   field ( readonly ) pirnr;         // 넘버레인지 생성
+
+  //action ( features : instance ) predictPIR result [1] $self; // PredictPIR 이라는 버튼 생성.
+
   association _PIRI { create; }     // 자식 생성 연결
 
-  mapping for ztckpirh
-    {
-      pirnr   = pirnr;
-      werks   = werks;
-      pirdt   = pirdt;
-      pirvr   = pirvr;
-      aimod   = aimod;
-      aidat   = aidat;
-      erdat   = erdat;
-      ernam   = ernam;
-      pirart  = pirart;
-      pirdel  = pirdel;
-    }
+  action predictNextMonthMRP result [1] $self; // PIRH 데이터를 활용한 예측 실행 버튼
 
 }
 
@@ -43,18 +34,5 @@ early numbering
   delete;
   field ( readonly ) pirnr, iteno;
   association _PIRH;
-
-    mapping for ztckpiri
-    {
-      pirnr   = pirnr;
-      iteno   = iteno;
-      matnr   = matnr;
-      plqty   = plqty;
-      aiqty   = aiqty;
-      urqty   = urqty;
-      plnmg   = plnmg;
-      meins   = meins;
-      cnflv   = cnflv;
-    }
 
 }

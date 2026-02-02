@@ -1,5 +1,5 @@
 @Metadata.layer: #CUSTOMER
-annotate entity ZDVCK_PIRI with
+annotate entity ZPVCK_PIRI with
 {
     
   /* 상세 페이지 구조 정의 */

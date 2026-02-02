@@ -1,56 +1,76 @@
 managed implementation in class zbp_dvck_pirh unique;
 strict ( 2 );    // 최신 문법을 따르겠다는 선언
+with draft;
 
 /* PIR Header 정의 */
 define behavior for ZDVCK_PIRH alias PIR_Header
 persistent table ztckpirh       // 실제 데이터가 저장될 DB 테이블
+draft table ztckpirh_d
 lock master                     // 잠금 주체
+total etag last_changed_at
 authorization master ( instance )
-//etag master <field_name>      // 데이터가 화면에 보일 때와 저장될 때 사이의 버전 차이를 체크
+early numbering
+
 {
   create;// ( authorization : global );
   update;
   delete;
-  field ( readonly ) pirnr;
-  association _Items { create; }
+  field ( readonly ) pirnr, wernm;
+  association _Items { create; with draft; }
+
+  validation valid_check on save { field werks; create; update; }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare   // 저장 전 유효성 검사 실행
+  {
+    validation valid_check ;
+  }
 
   mapping for ztckpirh
     {
-      pirnr   = pirnr;
-      werks   = werks;
-      pirdt   = pirdt;
-      pirvr   = pirvr;
-      aimod   = aimod;
-      aidat   = aidat;
-      erdat   = erdat;
-      ernam   = ernam;
-      pirart  = pirart;
-      pirdel  = pirdel;
+      pirnr                 = pirnr;
+      werks                 = werks;
+      pirdt                 = pirdt;
+      pirvr                 = pirvr;
+      aimod                 = aimod;
+      aidat                 = aidat;
+      erdat                 = erdat;
+      ernam                 = ernam;
+      pirart                = pirart;
+      pirdel                = pirdel;
+      last_changed_at       = last_changed_at;
+      local_last_changed_at = local_last_changed_at;
     }
 }
+
 
 /* PIR Item 정의 */
 define behavior for ZDVCK_PIRI alias PIR_Item
 persistent table ztckpiri
+draft table ztckpiri_d
 lock dependent by _Header
 authorization dependent by _Header
-//etag master <field_name>
+early numbering
 {
   update;
   delete;
   field ( readonly ) pirnr, iteno;
-  association _Header;
+  association _Header { with draft; }
 
   mapping for ztckpiri
     {
-      pirnr   = pirnr;
-      iteno   = iteno;
-      matnr   = matnr;
-      plqty   = plqty;
-      aiqty   = aiqty;
-      urqty   = urqty;
-      plnmg   = plnmg;
-      meins   = meins;
-      cnflv   = cnflv;
+      pirnr                 = pirnr;
+      iteno                 = iteno;
+      matnr                 = matnr;
+      plqty                 = plqty;
+      aiqty                 = aiqty;
+      urqty                 = urqty;
+      plnmg                 = plnmg;
+      meins                 = meins;
+      cnflv                 = cnflv;
+      local_last_changed_at = local_last_changed_at;
     }
 }

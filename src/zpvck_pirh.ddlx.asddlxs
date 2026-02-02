@@ -3,7 +3,7 @@
          title: { type: #STANDARD, value: 'pirnr' },
    description: { type: #STANDARD, value: 'werks' }
 }
-annotate entity ZDVCK_PIRH with
+annotate entity ZPVCK_PIRH with
 {
   /* 상세 페이지의 구성을 결정하는 부분(Facets) */
   @UI.facet: [
@@ -24,34 +24,27 @@ annotate entity ZDVCK_PIRH with
 
   @UI: { lineItem:       [{ position: 30, label: 'PIR 계획일자' }],
          identification: [{ position: 30, label: 'PIR 계획일자' }],
-         selectionField: [{ position: 30 }] }
+         selectionField: [{ position: 30 }] }   
   pirdt;
 
-  @UI: { lineItem:       [{ position: 40, label: 'PIR 계획버전' }],
-         identification: [{ position: 40, label: 'PIR 계획버전' }] }
+  @UI: { identification: [{ position: 40, label: 'PIR 계획버전' }] }
   pirvr;
 
-  @UI: { lineItem:       [{ position: 50, label: 'AI 모델' }],
-         identification: [{ position: 50, label: 'AI 모델' }] }
+  @UI: { identification: [{ position: 50, label: 'AI 모델' }] }
   aimod;
 
-  @UI: { lineItem:       [{ position: 60, label: 'AI 예측일자' }],
-         identification: [{ position: 60, label: 'AI 예측일자' }] }
+  @UI: { identification: [{ position: 60, label: 'AI 예측일자' }] }
   aidat;
 
-  @UI: { lineItem:       [{ position: 70, label: '문서 생성일' }],
-         identification: [{ position: 70, label: '문서 생성일' }] }
+  @UI: { identification: [{ position: 70, label: '문서 생성일' }] }
   erdat;
 
-  @UI: { lineItem:       [{ position: 80, label: '문서 생성자' }],
-         identification: [{ position: 80, label: '문서 생성자' }] }
+  @UI: { identification: [{ position: 80, label: '문서 생성자' }] }
   ernam;
 
-  @UI: { lineItem:       [{ position: 90, label: 'PIR 문서상태' }],
-         identification: [{ position: 90, label: 'PIR 문서상태' }] }
+  @UI: { identification: [{ position: 90, label: 'PIR 문서상태' }] }
   pirart;
 
-  @UI: { lineItem:       [{ position: 100, label: '삭제플래그' }],
-         identification: [{ position: 100, label: '삭제플래그' }] }
+  @UI: { identification: [{ position: 100, label: '삭제플래그' }] }
   pirdel;
 }

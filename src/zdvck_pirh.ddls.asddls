@@ -7,14 +7,12 @@ define root view entity ZDVCK_PIRH
   as select from ztckpirh
 
   composition [0..*] of ZDVCK_PIRI as _Items
-  // association [1..1] to ZDVCK_PLT_VH as _Plant on $projection.werks = _Plant.werks
+  association [1..1] to ZDVCK_PLT_VH as _Plant on $projection.werks = _Plant.werks
 {
   key pirnr,
 
-      //  @ObjectModel.foreignKey.association: '_Plant'
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'ZDVCK_PLT_VH', element: 'werks' } }]
-
       werks,
+      _Plant.wernm,
       pirdt,
       pirvr,
       aimod,
@@ -23,7 +21,10 @@ define root view entity ZDVCK_PIRH
       ernam,
       pirart,
       pirdel,
-
-      _Items
-      //     _Plant
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at,
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at,
+      _Items,
+      _Plant
 }

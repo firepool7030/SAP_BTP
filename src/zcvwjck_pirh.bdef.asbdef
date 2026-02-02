@@ -7,6 +7,8 @@ define behavior for ZCVWJCK_PIRH //alias <alias_name>
   use update;
   use delete;
 
+  //use action predictPIR;
+
   use association _PIRI { create; }
 }
 

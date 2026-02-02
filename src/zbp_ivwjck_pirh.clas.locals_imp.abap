@@ -13,6 +13,9 @@ CLASS lhc_PIRHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS earlynumbering_cba_Piri FOR NUMBERING
       IMPORTING entities FOR CREATE PIRHeader\_Piri.
 
+    METHODS predictNextMonthMRP FOR MODIFY
+      IMPORTING keys FOR ACTION PIRHeader~predictNextMonthMRP Result reusult.
+
 ENDCLASS.
 
 CLASS lhc_PIRHeader IMPLEMENTATION.
@@ -25,6 +28,7 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
 *
 *  ENDMETHOD.
 
+  " PIR 헤더번호 CREATE 넘버레인지
   METHOD earlynumbering_create.
 
     DATA: lv_pirnr type ztckpirh-pirnr.
@@ -68,8 +72,6 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
 
       endtry.
 
-      " MAPPED 채우기
-      " Fiori 화면의 임시 ID(%cid)와 DB ID를 연결해주는 과정
       lv_pirnr = lv_number+10(10).
 
       APPEND VALUE #(
@@ -82,6 +84,7 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
 
   ENDMETHOD.
 
+  " PIR 아이템번호 CREATE 넘버레인지
   METHOD earlynumbering_cba_Piri.
 
     DATA: lv_max_iteno TYPE ztckpiri-iteno.
@@ -113,6 +116,83 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
 
       ENDLOOP.
     ENDLOOP.
+
+  ENDMETHOD.
+
+  " PIR 데이터 기반 MRP 예측 메서드
+  METHOD predictNextMonthMRP.
+
+    " ngrok api url 데이터로 정의 (항상 가변적이니 계속 바꿔주자)
+    DATA: ngrok_url TYPE string VALUE 'https://c773f193eea3.ngrok-free.app'.
+
+    " HTTP 메세지 통신용 변수
+    DATA: lo_client         type ref to if_web_http_client,
+          lo_request        type ref to if_web_http_request,
+          lo_response       type ref to if_web_http_response,
+          lo_dest           type ref to if_http_destination,
+          lx_web_error      type ref to cx_web_http_client_error,   "파이썬 서버에 도달 조차 못할때 나오는 에러 잡는 변수
+          lx_dest_error     type ref to cx_http_dest_provider_error."
+
+
+    " 데이터베이스의 데이터를 lt_pir_ltems에 저장
+    read entities of zivwjck_pirh in local mode
+      entity PIRHeader by \_PIRI
+      all fields with corresponding #( keys )
+      result DATA(lt_pir_items).
+
+    " lt_pir_items가 비어있으면 메서드 종료
+    if lt_pir_items is initial.
+      return.
+    endif.
+
+    " JSON 형식 틀 만들기
+    DATA(lv_json) = /ui2/cl_json=>serialize(
+                      data             = lt_pir_items
+*                      compress         =
+*                      name             =
+*                      pretty_name      =
+*                      type_descr       =
+*                      assoc_arrays     =
+*                      ts_as_iso8601    =
+*                      expand_includes  =
+*                      assoc_arrays_opt =
+*                      numc_as_string   =
+*                      name_mappings    =
+*                      conversion_exits =
+*                      format_output    =
+*                      hex_as_base64    =
+                    ).
+
+    " 통신 시도
+    try.
+
+      " 1. 문자열 URL을 Destination 객체로 변환
+      lo_dest = cl_http_destination_provider=>create_by_url( ngrok_url ).
+
+      " 2. 변환된 객체를 사용해서 클라이언트 객체 생성
+      lo_client = cl_web_http_client_manager=>create_by_http_destination( lo_dest ).
+
+      " 3. 요청 객체값 설정
+      lo_request = lo_client->get_http_request( ).
+      lo_request->set_uri_path( '/predict' ). " 사용할 API의 엔드포인트 설정
+      lo_request->set_header_field( i_name = 'Content-Type' i_value = 'application/json' ). " 헤더에 데이터 내용물 타입이 JSON이라고 선언
+
+      " 4. 객체에 데이터 넣고 서버에 전송
+      lo_request->set_text( '{"material": "TEST_ITEM", "qty": 100}' ). " 보내줄 더미데이터 입력 -> 나중에 수정 필요!
+      lo_response = lo_client->execute( i_method = if_web_http_client=>post ). " 위에 더미 데이터를 넣고 python에 post하기
+
+      " 5. 서버에 대한 응답 변수에 저장
+      DATA(lv_status) = lo_response->get_status( ).
+      DATA(lv_response) = lo_response->get_text( ).
+
+    " 예외처리 1: 서버 연결 에러
+    catch cx_web_http_client_error into lx_web_error.
+
+    " 예외처리 2: URL 변환 에러
+    catch cx_http_dest_provider_error into lx_dest_error.
+
+    endtry.
+
 
   ENDMETHOD.
 
