@@ -43,7 +43,7 @@ annotate view ZCVWJCK_PIRH with
     identification: [{ position: 10 }],                    // 상세 화면 순서
     selectionField: [{ position: 10 }]                     // 검색 필터(상단 조회조건) 순서
   }
-  pirnr;
+  Pirnr;
 
   /* 플랜트 */
   @UI: { 
@@ -51,30 +51,31 @@ annotate view ZCVWJCK_PIRH with
     identification: [{ position: 20 }],
     selectionField: [{ position: 20 }] 
   }
-  werks;
+  @UI.textArrangement: #TEXT_LAST // 이 설정을 통해서 벨류 헬프의 설명도 같이 띄울 수 있다.
+  Werks;
 
   /* 계획일자 */
   @UI: { 
     lineItem:       [{ position: 30 }], 
     identification: [{ position: 30 }] 
   }
-  pirdt;
+  Pirdt;
   
   /* 문서 생성일 (상세 화면에만 표시) */
   @UI: { 
     identification: [{ position: 40 }] 
   }
-  erdat;
+  Erdat;
   
   /* 문서 생성자 (상세 화면에만 표시) */
   @UI: { 
     identification: [{ position: 50 }] 
   }
-  ernam;
+  Ernam;
   
   /* 삭제 플래그 (중요하지 않으니 리스트에선 숨김) */
   @UI: { 
     identification: [{ position: 99 }] 
   }
-  pirdel;
+  Pirdel;
 }

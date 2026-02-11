@@ -3,10 +3,12 @@
 {
 "FROM":
 [
+"ZDVCK_PLT_VH",
 "ZTCKPIRH"
 ],
 "ASSOCIATED":
 [
+"ZDVCK_PLT_VH",
 "ZIVWJCK_PIRI"
 ],
 "BASE":

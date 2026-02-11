@@ -29,13 +29,21 @@ annotate view ZCVWJCK_PIRI with
 
   /* 계획 수량 */
   @UI.lineItem:       [{ position: 30 }]
-  @UI.identification: [{ position: 30 }] 
+  @UI.identification: [{ position: 30 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_UnitOfMeasure', element: 'UnitOfMeasure' } }]
   plqty;
 
   /* AI 예측 수량 */
   @UI.lineItem:       [{ position: 40 }]
-  @UI.identification: [{ position: 40 }] 
+  @UI.identification: [{ position: 40 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_UnitOfMeasure', element: 'UnitOfMeasure' } }]
   aiqty;
+  
+  /* 단위 */
+  @UI.lineItem:       [{ position: 50 }] 
+  //@UI.identification: [{ position: 50 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_UnitOfMeasure', element: 'UnitOfMeasure' } }]
+  meins;
   
   /* 신뢰도 */
   @UI.lineItem:       [{ position: 60 }] 

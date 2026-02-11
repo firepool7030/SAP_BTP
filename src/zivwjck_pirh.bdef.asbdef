@@ -1,30 +1,52 @@
 managed implementation in class zbp_ivwjck_pirh unique;
 strict ( 2 ); // 최신 문법 검사 모드
+with draft;
 
 // <PIR 헤더 행동 정의>--------------------------------------------------
 define behavior for ZIVWJCK_PIRH alias PIRHeader
 persistent table ztckpirh
-lock master
+draft table ZTCKWJ_PIRH_D
+lock master total etag LastChangedAt
 authorization master ( instance )
 early numbering                     // 자동채번 활성화
-//etag master <field_name>
+etag master LocalLastChangedAt
 {
   create;// ( authorization : global );
   update;
   delete;
-  field ( readonly ) pirnr;         // 넘버레인지 생성
 
-  //action ( features : instance ) predictPIR result [1] $self; // PredictPIR 이라는 버튼 생성.
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
 
-  association _PIRI { create; }     // 자식 생성 연결
-
+  field ( readonly ) pirnr, PlantName;                    // 넘버레인지 생성
+  association _PIRI { create; with draft; }    // 자식도 draft로 연동
   action predictNextMonthMRP result [1] $self; // PIRH 데이터를 활용한 예측 실행 버튼
+
+  mapping for ztckpirh
+  {
+    Pirnr                 = pirnr;
+    Werks                 = werks;
+    Pirdt                 = pirdt;
+    Pirvr                 = pirvr;
+    Aimod                 = aimod;
+    Aidat                 = aidat;
+    Erdat                 = erdat;
+    Ernam                 = ernam;
+    Pirart                = pirart;
+    Pirdel                = pirdel;
+    LocalLastChangedAt    = local_last_changed_at;
+    LastChangedAt         = last_changed_at;
+  }
 
 }
 
 // <PIR 아이템 행동 정의>-------------------------------------------------
 define behavior for ZIVWJCK_PIRI alias PIRItem
 persistent table ztckpiri
+draft table ZTCKWJ_PIRI_D
 lock dependent by _PIRH
 authorization dependent by _PIRH
 early numbering
@@ -33,6 +55,24 @@ early numbering
   update;
   delete;
   field ( readonly ) pirnr, iteno;
-  association _PIRH;
+  association _PIRH { with draft; }
+
+  validation validateQuantity on save { create; update; field Aiqty, Plnmg, Plqty, Urqty; }
+  validation validateUnit     on save { create; update; field Meins; }
+  validation validateAIConf   on save { create; update; field Cnflv; }
+
+  mapping for ztckpiri
+  {
+    Pirnr                 = pirnr;
+    Iteno                 = iteno;
+    Matnr                 = matnr;
+    Plqty                 = plqty;
+    Aiqty                 = aiqty;
+    Urqty                 = urqty;
+    Plnmg                 = plnmg;
+    Meins                 = meins;
+    Cnflv                 = cnflv;
+    LocalLastChangedAt    = local_last_changed_at;
+  }
 
 }

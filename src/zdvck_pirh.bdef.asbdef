@@ -28,7 +28,6 @@ early numbering
   {
     validation valid_check ;
   }
-
   mapping for ztckpirh
     {
       pirnr                 = pirnr;
@@ -45,7 +44,6 @@ early numbering
       local_last_changed_at = local_last_changed_at;
     }
 }
-
 
 /* PIR Item 정의 */
 define behavior for ZDVCK_PIRI alias PIR_Item

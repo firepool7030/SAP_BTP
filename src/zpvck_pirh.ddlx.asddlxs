@@ -12,8 +12,8 @@ annotate entity ZPVCK_PIRH with
   ]
 
   /* 목록 화면과 상세 화면에 보일 필드 지정 */
-  @UI: { lineItem:       [{ position: 10, label: 'PIR 문서번호' }],
-         identification: [{ position: 10, label: 'PIR 문서번호' }],
+  @UI: { lineItem:       [{ position: 10, label: 'PIR 문서번호', criticality: 'light_del' }],
+         identification: [{ position: 10, label: 'PIR 문서번호', criticality: 'light_del' }],
          selectionField: [{ position: 10 }] }
   pirnr;
 
@@ -45,6 +45,10 @@ annotate entity ZPVCK_PIRH with
   @UI: { identification: [{ position: 90, label: 'PIR 문서상태' }] }
   pirart;
 
-  @UI: { identification: [{ position: 100, label: '삭제플래그' }] }
+  @UI: { hidden: true }
   pirdel;
+  
+//  @UI: { hidden: true }
+//  light_del;
+  
 }

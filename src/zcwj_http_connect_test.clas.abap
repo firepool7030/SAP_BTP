@@ -56,7 +56,7 @@ CLASS zcwj_http_connect_test IMPLEMENTATION.
 
       out->write( |조회된 아이템 건수: { lines( lt_items ) } 건| ).
 
-      " 데이터를 활요애서 JSON 형식으로 변환 /ui2/cl_json 사용-----------------------------
+      " 데이터를 활용해서 JSON 형식으로 변환 /ui2/cl_json 사용-----------------------------
       ls_root_data-pir_id = lv_test_pirnr.
       ls_root_data-items = lt_items.
 

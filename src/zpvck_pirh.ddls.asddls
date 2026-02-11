@@ -20,6 +20,7 @@ define root view entity ZPVCK_PIRH
       ernam,
       pirart,
       pirdel,
+      light_del,
       _Items : redirected to composition child ZPVCK_PIRI // 부모자식 간 통로 재설정
 
 }
