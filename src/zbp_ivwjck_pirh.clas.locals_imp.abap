@@ -10,8 +10,8 @@ CLASS lhc_PIRHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS earlynumbering_cba_PIRItem FOR NUMBERING
       IMPORTING entities FOR CREATE PIRHeader\_PIRI.
 
-    METHODS predictNextMonthMRP FOR MODIFY
-      IMPORTING keys FOR ACTION PIRHeader~predictNextMonthMRP Result reusult.
+    METHODS predictNextMonthPIR FOR MODIFY
+    IMPORTING keys FOR ACTION PIRHeader~predictNextMonthPIR RESULT result.
 
 ENDCLASS.
 
@@ -124,49 +124,38 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
 
   ENDMETHOD.
 
-  " PIR 데이터 기반 MRP 예측 메서드
-  METHOD predictNextMonthMRP.
+  " SO 데이터 기반 PIR 예측 메서드
+  METHOD predictNextMonthPIR.
 
     " ngrok api url 데이터로 정의 (항상 가변적이니 계속 바꿔주자)
-    DATA: ngrok_url TYPE string VALUE 'https://c773f193eea3.ngrok-free.app'.
+    DATA: ngrok_url TYPE string VALUE 'https://2177-2001-e60-8805-4b10-50a1-f7dd-6ebd-32cb.ngrok-free.app'.
 
     " HTTP 메세지 통신용 변수
     DATA: lo_client         type ref to if_web_http_client,
           lo_request        type ref to if_web_http_request,
           lo_response       type ref to if_web_http_response,
           lo_dest           type ref to if_http_destination,
-          lx_web_error      type ref to cx_web_http_client_error,   "파이썬 서버에 도달 조차 못할때 나오는 에러 잡는 변수
+          lx_web_error      type ref to cx_web_http_client_error,   " 파이썬 서버에 도달 조차 못할때 나오는 에러 잡는 변수
           lx_dest_error     type ref to cx_http_dest_provider_error."
 
+    TYPES: BEGIN OF ts_root,
+             history_items TYPE STANDARD TABLE OF ztcksh WITH DEFAULT KEY,
+           END OF ts_root.
 
-    " 데이터베이스의 데이터를 lt_pir_ltems에 저장
-    read entities of zivwjck_pirh in local mode
-      entity PIRHeader by \_piri
-      all fields with corresponding #( keys )
-      result DATA(lt_pir_items).
+    DATA: ls_request_data TYPE ts_root.
 
-    " lt_pir_items가 비어있으면 메서드 종료
-    if lt_pir_items is initial.
-      return.
-    endif.
+    " ZTCKSH 테이블 전체 조회 (SELECT)
+    SELECT *
+      FROM ztcksh
+      INTO TABLE @ls_request_data-history_items.
 
-    " JSON 형식 틀 만들기
-    DATA(lv_json) = /ui2/cl_json=>serialize(
-                      data             = lt_pir_items
-*                      compress         =
-*                      name             =
-*                      pretty_name      =
-*                      type_descr       =
-*                      assoc_arrays     =
-*                      ts_as_iso8601    =
-*                      expand_includes  =
-*                      assoc_arrays_opt =
-*                      numc_as_string   =
-*                      name_mappings    =
-*                      conversion_exits =
-*                      format_output    =
-*                      hex_as_base64    =
-                    ).
+    " 데이터가 없으면 메서드 종료
+    IF ls_request_data-history_items IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    " JSON 형식으로 데이터 수정
+    DATA(lv_json) = /ui2/cl_json=>serialize( data = ls_request_data ).
 
     " 통신 시도
     try.
@@ -183,7 +172,7 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
       lo_request->set_header_field( i_name = 'Content-Type' i_value = 'application/json' ). " 헤더에 데이터 내용물 타입이 JSON이라고 선언
 
       " 4. 객체에 데이터 넣고 서버에 전송
-      lo_request->set_text( '{"material": "TEST_ITEM", "qty": 100}' ). " 보내줄 더미데이터 입력 -> 나중에 수정 필요!
+      lo_request->set_text( lv_json ). " 보내줄 더미데이터 입력 -> 나중에 수정 필요!
       lo_response = lo_client->execute( i_method = if_web_http_client=>post ). " 위에 더미 데이터를 넣고 python에 post하기
 
       " 5. 서버에 대한 응답 변수에 저장

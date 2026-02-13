@@ -14,7 +14,7 @@ define behavior for ZCVWJCK_PIRH //alias <alias_name>
   use action Resume;
   use action Prepare;
 
-  use action predictNextMonthMRP;
+  use action predictNextMonthPIR;
 
   use association _PIRI { create; with draft; }
 }

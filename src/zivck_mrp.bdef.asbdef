@@ -1,0 +1,27 @@
+managed implementation in class zbp_ivck_mrp unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZIVCK_MRP alias MRP
+persistent table ztckmrp
+draft table ztckmrp_d
+lock master total etag last_changed_at
+authorization master ( instance )
+early numbering
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) Mrpnr;
+  // MRP Live 실행버튼
+  action RunMRPLive result [1] $self;
+
+  validation valid_check on save { field Werks, Matnr; create; update; }
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare   // 저장 전 유효성 검사 실행
+    { validation valid_check ; }
+}

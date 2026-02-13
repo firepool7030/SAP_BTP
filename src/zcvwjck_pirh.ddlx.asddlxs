@@ -39,15 +39,26 @@ annotate view ZCVWJCK_PIRH with
   
   /* PIR 번호 */
   @UI: { 
-    lineItem:       [{ position: 10, importance: #HIGH }], // 리스트 화면 순서
-    identification: [{ position: 10 }],                    // 상세 화면 순서
-    selectionField: [{ position: 10 }]                     // 검색 필터(상단 조회조건) 순서
+    lineItem: [
+      { position: 10, importance: #HIGH },
+      { type: #FOR_ACTION, 
+        dataAction: 'predictNextMonthPIR', 
+        label: 'AI 예측 데이터 생성', 
+        position: 10 } // 여기에 invocationGrouping을 넣지 마세요.
+    ], 
+    identification: [
+      { position: 10 },
+      { type: #FOR_ACTION, 
+        dataAction: 'predictNextMonthPIR', 
+        label: 'AI 예측 데이터 생성', 
+        position: 10 }
+    ]
   }
   Pirnr;
 
   /* 플랜트 */
   @UI: { 
-    lineItem:       [{ position: 20, importance: #HIGH }], 
+    lineItem:       [{ position: 20, importance: #HIGH }],
     identification: [{ position: 20 }],
     selectionField: [{ position: 20 }] 
   }

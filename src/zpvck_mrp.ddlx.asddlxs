@@ -1,0 +1,47 @@
+@Metadata.layer: #CUSTOMER
+@UI.headerInfo: { typeName: 'MRP Live', typeNamePlural: 'MRP Live 목록',
+title: { type: #STANDARD, value: 'Mrpnr' },
+description: { type: #STANDARD, value: 'Pirnr' }
+}
+
+annotate entity ZPVCK_MRP with
+{
+ /* 1. MRP 상세페이지 설정 */
+  @UI.facet: [
+    /* MRP Header Info*/
+    { id: 'Header',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'MRP Info',
+      position: 10
+    }
+  ]
+  
+ /* 2. 필드 설정 */
+  @EndUserText.label: 'MRP 문서번호'
+  @UI: { 
+    lineItem: [{ 
+        position: 10, 
+        importance: #HIGH ,
+        type: #FOR_ACTION, 
+        dataAction: 'RunMRPLive', 
+        label: 'Run MRP'
+      }],
+    selectionField: [{ position: 10 }]
+  }
+  Mrpnr;
+//  Pirnr;
+//  Mrpdt;
+//  Werks;
+//  Matnr;
+//  Menge;
+//  Meins;
+//  Doart;
+//  Docnr;
+//  local_last_changed_at;
+//  last_changed_at;
+//  /* Associations */
+//  _BOMH;
+//  _PIRH;
+
+}

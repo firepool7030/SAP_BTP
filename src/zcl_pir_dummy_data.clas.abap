@@ -17,7 +17,7 @@ CLASS zcl_pir_dummy_data IMPLEMENTATION.
 
         DATA: lt_data TYPE TABLE OF ztckpirh.
 
-        DELETE FROM ztckpirh.
+*        DELETE FROM ztckpirh.
 
         lt_data = VALUE #(
           (

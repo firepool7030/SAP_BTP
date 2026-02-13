@@ -1,0 +1,4 @@
+@EndUserText.label: 'MRP 서비스 정의'
+define service ZUI_MRP_SD {
+  expose ZPVCK_MRP as MRP;
+}

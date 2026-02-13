@@ -23,7 +23,7 @@ etag master LocalLastChangedAt
 
   field ( readonly ) pirnr, PlantName;                    // 넘버레인지 생성
   association _PIRI { create; with draft; }    // 자식도 draft로 연동
-  action predictNextMonthMRP result [1] $self; // PIRH 데이터를 활용한 예측 실행 버튼
+  static action predictNextMonthPIR result [1] $self; // PIRH 데이터를 활용한 예측 실행 버튼
 
   mapping for ztckpirh
   {
@@ -40,7 +40,6 @@ etag master LocalLastChangedAt
     LocalLastChangedAt    = local_last_changed_at;
     LastChangedAt         = last_changed_at;
   }
-
 }
 
 // <PIR 아이템 행동 정의>-------------------------------------------------
