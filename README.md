@@ -1,1 +1,1 @@
-# Developing SAP Fiori Apps for MM & FI on the BTP Trial Environment
+# Developing SAP Fiori Apps for PIR & MRP Process Using BTP Trial Environment
