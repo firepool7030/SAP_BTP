@@ -76,7 +76,7 @@ CLASS zcwj_http_connect_test IMPLEMENTATION.
       lo_request->set_text( lv_json ). " 보내줄 더미데이터 입력 -> 나중에 수정 필요!
       lo_response = lo_client->execute( i_method = if_web_http_client=>post ). " 위에 더미 데이터를 넣고 python에 post하기
 
-" 6. 결과 수신 및 출력 (이 부분이 가장 중요!)
+      " 6. 결과 수신 및 출력 (이 부분이 가장 중요!)
         DATA(lv_status) = lo_response->get_status( ).
         DATA(lv_response_body) = lo_response->get_text( ).
 
