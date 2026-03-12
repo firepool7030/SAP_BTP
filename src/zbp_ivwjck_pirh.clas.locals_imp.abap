@@ -11,7 +11,8 @@ CLASS lhc_PIRHeader DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING entities FOR CREATE PIRHeader\_piri.
 
     METHODS predictNextMonthPIR FOR MODIFY
-      IMPORTING keys FOR ACTION PIRHeader~predictNextMonthPIR RESULT result.
+      IMPORTING keys FOR ACTION PIRHeader~predictNextMonthPIR.
+*      IMPORTING keys FOR ACTION PIRHeader~predictNextMonthPIR RESULT result.
 
 ENDCLASS.
 
@@ -128,7 +129,7 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
   METHOD predictNextMonthPIR.
 
     " ngrok api url 데이터로 정의 (항상 가변적이니 계속 바꿔주자)
-    DATA: ngrok_url TYPE string VALUE 'https://da85-221-153-70-15.ngrok-free.app'.
+    DATA: ngrok_url TYPE string VALUE 'https://8dfe-221-153-70-15.ngrok-free.app'.
 
     " HTTP 메세지 통신용 변수
     DATA: lo_client     TYPE REF TO if_web_http_client,
@@ -249,25 +250,109 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
     "   RAP EML을 사용한 생성 (Draft Deep Create) - Static Action 버전
     " =====================================================================
 
-    "3. EML처리를 위한 테이블 선언
+*    "3. EML처리를 위한 테이블 선언
+*    DATA: lt_create_head TYPE TABLE FOR CREATE ZIVWJCK_PIRH\\PIRHeader,
+*          lt_create_item TYPE TABLE FOR CREATE ZIVWJCK_PIRH\\PIRHeader\_piri,
+*          ls_create_item LIKE LINE OF lt_create_item.
+*
+*    "4. 헤더 데이터 생성
+*    append value #(
+*      %cid      = 'CID_HEADER'
+*      %is_draft = if_abap_behv=>mk-on "Draft 모드로 설정
+*    ) TO lt_create_head.
+*
+*    "5. 아이템 데이터 세팅
+*    ls_create_item-%cid_ref  = 'CID_HEADER'.
+*    ls_create_item-%is_draft = if_abap_behv=>mk-on.
+*
+*    DATA(lv_iteno) = 1. "아이템 번호 1부터 시작
+*
+*    LOOP AT ls_api_response-results into data(ls_results).
+*      append value #(
+*        %cid      = |CID_ITEM_{ lv_iteno }|
+*        %is_draft = if_abap_behv=>mk-on
+*        iteno     = lv_iteno
+*        matnr     = ls_results-matnr
+*        aiqty     = ls_results-aiqty
+*        cnflv     = ls_results-cnflv
+*        %control  = VALUE #( iteno = if_abap_behv=>mk-on
+*                             matnr = if_abap_behv=>mk-on
+*                             aiqty = if_abap_behv=>mk-on
+*                             cnflv = if_abap_behv=>mk-on )
+*        ) TO ls_create_item-%target.
+*
+*      lv_iteno += 1.
+*
+*    ENDLOOP.
+*
+*    append ls_create_item to lt_create_item.
+*
+*    " 7. MODIFY ENTITIES 실행 (로컬 모드)
+*    MODIFY ENTITIES OF ZIVWJCK_PIRH IN LOCAL MODE
+*      ENTITY PIRHeader
+*        CREATE FROM lt_create_head
+*      CREATE BY \_piri
+*        FROM lt_create_item
+*      MAPPED   DATA(ls_mapped)
+*      FAILED   DATA(ls_failed)
+*      REPORTED DATA(ls_reported).
+*
+*    " 8. 생성된 결과 및 에러를 UI로 전달 (중요)
+*    " = 대신 APPEND LINES OF를 써야 기존에 담겨있던 다른 에러가 덮어씌워져 날아가는 것을 방지할 수 있습니다.
+*    APPEND LINES OF ls_mapped-pirheader   TO mapped-pirheader.
+*    APPEND LINES OF ls_failed-pirheader   TO failed-pirheader.
+*    APPEND LINES OF ls_reported-pirheader TO reported-pirheader.
+*
+*    " 9-1. 생성된 임시 키(ls_mapped)를 바탕으로 생성된 헤더 데이터를 다시 읽어옵니다.
+*    READ ENTITIES OF ZIVWJCK_PIRH IN LOCAL MODE
+*      ENTITY PIRHeader
+*        ALL FIELDS WITH CORRESPONDING #( ls_mapped-pirheader )
+*      RESULT DATA(lt_read_head).
+*
+*    " 9-2. 읽어온 데이터를 액션의 반환값(result)과 성공 메시지(reported)에 담아줍니다.
+*
+*    " [수정 부분] 1. Fiori UI가 버튼 클릭 시 보낸 Action Request의 %cid를 읽어옵니다.
+*    DATA(lv_action_cid) = VALUE #( keys[ 1 ]-%cid OPTIONAL ).
+*
+*    LOOP AT lt_read_head INTO DATA(ls_read_head).
+*
+*      " [수정 부분] 2. result에 %cid와 %tky를 반드시 포함해야 Fiori가 응답을 인식합니다.
+*      APPEND VALUE #(
+*        %cid   = lv_action_cid      " UI 요청과 결과를 연결해주는 핵심 키
+*        %param = ls_read_head       " 반환할 실제 데이터 ($self)
+*      ) TO result.
+*
+*      " 생성된 문서에 바인딩된 성공 메시지 (리스트 화면 갱신 시 팝업으로 나타남)
+*      APPEND VALUE #(
+*        %tky = ls_read_head-%tky
+*        %msg = new_message_with_text(
+*                 severity = if_abap_behv_message=>severity-success
+*                 text     = CONV #( |드래프트가 성공적으로 생성되었습니다.| )
+*               )
+*      ) TO reported-pirheader.
+*
+*    ENDLOOP.
+
     DATA: lt_create_head TYPE TABLE FOR CREATE ZIVWJCK_PIRH\\PIRHeader,
           lt_create_item TYPE TABLE FOR CREATE ZIVWJCK_PIRH\\PIRHeader\_piri,
           ls_create_item LIKE LINE OF lt_create_item.
 
-    "4. 헤더 데이터 생성
-    append value #(
-      %cid      = 'CID_HEADER'
-      %is_draft = if_abap_behv=>mk-on "Draft 모드로 설정
+    " Static Action이므로 keys에서 %cid만 가져옵니다.
+    DATA(lv_cid) = keys[ 1 ]-%cid.
+
+    " 1. 헤더 데이터 세팅 (Draft 생성으로 고정)
+    APPEND VALUE #(
+      %cid      = lv_cid
+      %is_draft = if_abap_behv=>mk-on  " Static Action에서는 직접 지정
     ) TO lt_create_head.
 
-    "5. 아이템 데이터 세팅
-    ls_create_item-%cid_ref  = 'CID_HEADER'.
+    " 2. 아이템 데이터 세팅
+    ls_create_item-%cid_ref  = lv_cid.
     ls_create_item-%is_draft = if_abap_behv=>mk-on.
 
-    DATA(lv_iteno) = 1. "아이템 번호 1부터 시작
-
-    LOOP AT ls_api_response-results into data(ls_results).
-      append value #(
+    DATA(lv_iteno) = 1.
+    LOOP AT ls_api_response-results INTO DATA(ls_results).
+      APPEND VALUE #(
         %cid      = |CID_ITEM_{ lv_iteno }|
         %is_draft = if_abap_behv=>mk-on
         iteno     = lv_iteno
@@ -278,59 +363,36 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
                              matnr = if_abap_behv=>mk-on
                              aiqty = if_abap_behv=>mk-on
                              cnflv = if_abap_behv=>mk-on )
-        ) TO ls_create_item-%target.
-
+      ) TO ls_create_item-%target.
       lv_iteno += 1.
-
     ENDLOOP.
+    APPEND ls_create_item TO lt_create_item.
 
-    append ls_create_item to lt_create_item.
-
-    " 7. MODIFY ENTITIES 실행 (로컬 모드)
+    " 3. MODIFY ENTITIES 실행
     MODIFY ENTITIES OF ZIVWJCK_PIRH IN LOCAL MODE
       ENTITY PIRHeader
         CREATE FROM lt_create_head
-      CREATE BY \_piri
-        FROM lt_create_item
-      MAPPED   DATA(ls_mapped)
-      FAILED   DATA(ls_failed)
-      REPORTED DATA(ls_reported).
+        CREATE BY \_piri FROM lt_create_item
+      MAPPED DATA(ls_mapped_create)
+      FAILED DATA(ls_failed_create)
+      REPORTED DATA(ls_reported_create).
 
-    " 8. 생성된 결과 및 에러를 UI로 전달 (중요)
-    " = 대신 APPEND LINES OF를 써야 기존에 담겨있던 다른 에러가 덮어씌워져 날아가는 것을 방지할 수 있습니다.
-    APPEND LINES OF ls_mapped-pirheader   TO mapped-pirheader.
-    APPEND LINES OF ls_failed-pirheader   TO failed-pirheader.
-    APPEND LINES OF ls_reported-pirheader TO reported-pirheader.
+    " 4. 가이드의 핵심: 생성된 결과를 전체 mapped 구조체에 전달
+    " 이 과정이 있어야 Fiori UI가 생성된 문서를 인식하고 Object Page로 이동할 수 있습니다.
+    mapped-pirheader   = ls_mapped_create-pirheader.
+    failed-pirheader   = ls_failed_create-pirheader.
+    reported-pirheader = ls_reported_create-pirheader.
 
-    " 9-1. 생성된 임시 키(ls_mapped)를 바탕으로 생성된 헤더 데이터를 다시 읽어옵니다.
-    READ ENTITIES OF ZIVWJCK_PIRH IN LOCAL MODE
-      ENTITY PIRHeader
-        ALL FIELDS WITH CORRESPONDING #( ls_mapped-pirheader )
-      RESULT DATA(lt_read_head).
-
-    " 9-2. 읽어온 데이터를 액션의 반환값(result)과 성공 메시지(reported)에 담아줍니다.
-
-    " [수정 부분] 1. Fiori UI가 버튼 클릭 시 보낸 Action Request의 %cid를 읽어옵니다.
-    DATA(lv_action_cid) = VALUE #( keys[ 1 ]-%cid OPTIONAL ).
-
-    LOOP AT lt_read_head INTO DATA(ls_read_head).
-
-      " [수정 부분] 2. result에 %cid와 %tky를 반드시 포함해야 Fiori가 응답을 인식합니다.
-      APPEND VALUE #(
-        %cid   = lv_action_cid      " UI 요청과 결과를 연결해주는 핵심 키
-        %param = ls_read_head       " 반환할 실제 데이터 ($self)
-      ) TO result.
-
-      " 생성된 문서에 바인딩된 성공 메시지 (리스트 화면 갱신 시 팝업으로 나타남)
-      APPEND VALUE #(
-        %tky = ls_read_head-%tky
-        %msg = new_message_with_text(
-                 severity = if_abap_behv_message=>severity-success
-                 text     = CONV #( |드래프트가 성공적으로 생성되었습니다.| )
-               )
-      ) TO reported-pirheader.
-
-    ENDLOOP.
+    " 성공 메시지 추가 (선택 사항)
+    IF ls_failed_create IS INITIAL.
+        APPEND VALUE #(
+          %cid = lv_cid
+          %msg = new_message_with_text(
+                   severity = if_abap_behv_message=>severity-success
+                   text     = |PIR 예측 드래프트가 생성되었습니다.|
+                 )
+        ) TO reported-pirheader.
+    ENDIF.
 
   ENDMETHOD.
 

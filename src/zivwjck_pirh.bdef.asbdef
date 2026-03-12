@@ -23,7 +23,8 @@ etag master LocalLastChangedAt
 
   field ( readonly ) pirnr, PlantName;                    // 넘버레인지 생성
   association _PIRI { create; with draft; }    // 자식도 draft로 연동
-  static action predictNextMonthPIR result [1] $self;
+//  static action predictNextMonthPIR result [1] $self;
+  static factory action predictNextMonthPIR [1];
 
   mapping for ztckpirh
   {
