@@ -128,7 +128,7 @@ CLASS lhc_PIRHeader IMPLEMENTATION.
   METHOD predictNextMonthPIR.
 
     " ngrok api url 데이터로 정의 (항상 가변적이니 계속 바꿔주자)
-    DATA: ngrok_url TYPE string VALUE 'https://1518-175-196-202-23.ngrok-free.app'.
+    DATA: ngrok_url TYPE string VALUE 'https://da85-221-153-70-15.ngrok-free.app'.
 
     " HTTP 메세지 통신용 변수
     DATA: lo_client     TYPE REF TO if_web_http_client,
